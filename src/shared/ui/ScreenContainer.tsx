@@ -7,6 +7,7 @@ import {
   ViewStyle,
   StyleSheet,
 } from 'react-native';
+import {useScreenContainer} from './model/useScreenContainer';
 
 export interface ScreenContainerProps {
   children: React.ReactNode;
@@ -29,14 +30,17 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   className = '',
   style,
 }) => {
-  const paddingClass = withPadding ? 'px-4' : '';
+  const {isScrollable, paddingClass} = useScreenContainer({
+    scrollable,
+    withPadding,
+  });
 
   return (
     <SafeAreaView
       className={`flex-1 bg-dark-background ${className}`}
       style={style}>
       <StatusBar barStyle="light-content" backgroundColor="#0B0D13" />
-      {scrollable ? (
+      {isScrollable ? (
         <ScrollView
           className={`flex-1 ${paddingClass}`}
           contentContainerStyle={styles.scrollContent}

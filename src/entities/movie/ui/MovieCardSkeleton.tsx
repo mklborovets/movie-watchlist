@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SkeletonBlock} from '@/shared';
+import {useMovieCardSkeleton} from '../model/useMovieCardSkeleton';
 
 export interface MovieCardSkeletonProps {
   variant?: 'vertical' | 'horizontal';
@@ -26,9 +27,9 @@ export const MovieCardSkeleton: React.FC<MovieCardSkeletonProps> = ({
   count = 1,
   className = '',
 }) => {
-  const items = Array.from({length: count}, (_, index) => index);
+  const {items, isHorizontal} = useMovieCardSkeleton({variant, count});
 
-  if (variant === 'horizontal') {
+  if (isHorizontal) {
     return (
       <View className={className}>
         {items.map(item => (

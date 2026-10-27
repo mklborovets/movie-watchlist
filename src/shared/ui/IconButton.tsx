@@ -1,13 +1,12 @@
 import React from 'react';
 import {TouchableOpacity, View, Text, ViewStyle} from 'react-native';
+import {
+  useIconButton,
+  IconButtonVariant,
+  IconButtonSize,
+} from './model/useIconButton';
 
-export type IconButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'ghost'
-  | 'danger'
-  | 'glass';
-export type IconButtonSize = 'sm' | 'md' | 'lg';
+export type {IconButtonVariant, IconButtonSize};
 
 export interface IconButtonProps {
   icon: React.ReactNode;
@@ -32,36 +31,35 @@ export const IconButton: React.FC<IconButtonProps> = ({
   className = '',
   style,
 }) => {
-  const sizeStyles: Record<IconButtonSize, string> = {
-    sm: 'w-8 h-8 rounded-lg',
-    md: 'w-10 h-10 rounded-full',
-    lg: 'w-12 h-12 rounded-full',
-  };
-
-  const variantStyles: Record<IconButtonVariant, string> = {
-    primary: 'bg-brand-primary border-transparent',
-    secondary: 'bg-dark-card border border-dark-border',
-    ghost: 'bg-transparent border-transparent',
-    danger: 'bg-red-950/80 border border-red-800/50',
-    glass: 'bg-black/40 border border-white/20',
-  };
+  const {
+    handlePress,
+    isDisabled,
+    isBadgeVisible,
+    formattedBadgeCount,
+    containerClassName,
+  } = useIconButton({
+    onPress,
+    variant,
+    size,
+    disabled,
+    badgeCount,
+    className,
+  });
 
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      onPress={onPress}
-      disabled={disabled}
+      onPress={handlePress}
+      disabled={isDisabled}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={style}
-      className={`items-center justify-center relative ${sizeStyles[size]} ${
-        variantStyles[variant]
-      } ${disabled ? 'opacity-40' : ''} ${className}`}>
+      className={containerClassName}>
       {icon}
-      {typeof badgeCount === 'number' && badgeCount > 0 ? (
+      {isBadgeVisible ? (
         <View className="absolute -top-1 -right-1 bg-brand-primary min-w-[18px] h-[18px] px-1 rounded-full items-center justify-center border-2 border-dark-background">
           <Text className="text-white text-[10px] font-bold">
-            {badgeCount > 99 ? '99+' : badgeCount}
+            {formattedBadgeCount}
           </Text>
         </View>
       ) : null}
