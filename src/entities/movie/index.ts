@@ -1,4 +1,5 @@
 export * from './model/types';
+export * from './model/savedMoviesStore';
 export * from './model/useMovieCardAnimation';
 export * from './model/useMovieCardSkeleton';
 export * from './lib/mapMovieDto';
