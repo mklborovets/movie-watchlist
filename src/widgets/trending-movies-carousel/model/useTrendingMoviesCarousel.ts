@@ -21,8 +21,12 @@ export const useTrendingMoviesCarousel = ({
     refetch();
   };
 
+  const movies: Movie[] = data
+    ? Array.from(new Map(data.map(movie => [movie.id, movie])).values())
+    : [];
+
   return {
-    movies: data || [],
+    movies,
     isLoading,
     isError,
     handleMoviePress,

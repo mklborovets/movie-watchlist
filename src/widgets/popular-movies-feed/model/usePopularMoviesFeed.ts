@@ -20,7 +20,12 @@ export const usePopularMoviesFeed = ({
     refetch,
   } = usePopularMoviesInfiniteQuery();
 
-  const movies: Movie[] = data ? data.pages.flatMap(page => page.movies) : [];
+  const rawMovies: Movie[] = data
+    ? data.pages.flatMap(page => page.movies)
+    : [];
+  const movies: Movie[] = Array.from(
+    new Map(rawMovies.map(movie => [movie.id, movie])).values(),
+  );
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {

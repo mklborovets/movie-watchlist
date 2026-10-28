@@ -28,9 +28,12 @@ export const useSearchCatalog = ({
 
   const activeQuery = isSearching ? searchQuery : discoverQuery;
 
-  const movies: Movie[] = activeQuery.data
+  const rawMovies: Movie[] = activeQuery.data
     ? activeQuery.data.pages.flatMap(page => page.movies)
     : [];
+  const movies: Movie[] = Array.from(
+    new Map(rawMovies.map(movie => [movie.id, movie])).values(),
+  );
 
   const isLoading = activeQuery.isLoading;
   const isError = activeQuery.isError;
