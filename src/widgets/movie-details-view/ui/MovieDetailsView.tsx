@@ -123,7 +123,6 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
               source={{uri: movie.posterUrl}}
               style={styles.poster}
               resizeMode="cover"
-              sharedTransitionTag={`movie-poster-${movie.id}`}
             />
           ) : (
             <View

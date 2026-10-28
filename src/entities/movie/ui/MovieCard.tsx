@@ -47,7 +47,6 @@ export const MovieCard: React.FC<MovieCardProps> = ({
               source={{uri: movie.posterUrl}}
               style={styles.poster}
               resizeMode="cover"
-              sharedTransitionTag={`movie-poster-${movie.id}`}
             />
           ) : (
             <View
