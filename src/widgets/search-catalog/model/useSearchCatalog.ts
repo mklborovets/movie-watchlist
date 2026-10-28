@@ -7,6 +7,7 @@ import {
 import {useDebounce} from '@/shared';
 import {useSearchQueryStore} from '@/features/search-query';
 import {useGenreFilterStore} from '@/features/genre-filter';
+import {useCatalogFilterStore} from '@/features/catalog-filter';
 
 export interface UseSearchCatalogProps {
   onMoviePress?: (movie: Movie) => void;
@@ -20,10 +21,16 @@ export const useSearchCatalog = ({
   const isSearching = debouncedQuery.length > 0;
 
   const selectedGenreId = useGenreFilterStore(state => state.selectedGenreId);
+  const sortBy = useCatalogFilterStore(state => state.sortBy);
+  const minRating = useCatalogFilterStore(state => state.minRating);
+  const releaseYear = useCatalogFilterStore(state => state.releaseYear);
 
   const searchQuery = useSearchMoviesInfiniteQuery({query: debouncedQuery});
   const discoverQuery = useDiscoverMoviesInfiniteQuery({
     genreId: selectedGenreId || undefined,
+    sortBy,
+    minRating: minRating || undefined,
+    releaseYear: releaseYear || undefined,
   });
 
   const activeQuery = isSearching ? searchQuery : discoverQuery;

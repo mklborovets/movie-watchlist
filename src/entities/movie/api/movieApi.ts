@@ -51,17 +51,25 @@ export const movieApi = {
     genreId,
     page = 1,
     sortBy = 'popularity.desc',
+    minRating,
+    releaseYear,
   }: DiscoverMoviesQueryParams = {}): Promise<MovieApiResponseDto<MovieDto>> {
+    const params: Record<string, string | number | boolean | undefined> = {
+      with_genres: genreId,
+      page,
+      sort_by: sortBy,
+      include_adult: false,
+    };
+    if (minRating && minRating > 0) {
+      params['vote_average.gte'] = minRating;
+      params['vote_count.gte'] = 30;
+    }
+    if (releaseYear && releaseYear > 0) {
+      params.primary_release_year = releaseYear;
+    }
     const response = await httpClient.get<MovieApiResponseDto<MovieDto>>(
       '/discover/movie',
-      {
-        params: {
-          with_genres: genreId,
-          page,
-          sort_by: sortBy,
-          include_adult: false,
-        },
-      },
+      {params},
     );
     return response.data;
   },

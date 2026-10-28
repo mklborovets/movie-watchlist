@@ -3,6 +3,10 @@ import {View, FlatList, StyleSheet} from 'react-native';
 import {Movie, MovieHorizontalCard, MovieCardSkeleton} from '@/entities/movie';
 import {SearchInputBar} from '@/features/search-query';
 import {GenreFilterList} from '@/features/genre-filter';
+import {
+  CatalogFilterButton,
+  CatalogFilterModal,
+} from '@/features/catalog-filter';
 import {WatchlistButton} from '@/features/toggle-watchlist';
 import {EmptyStateView, ErrorStateView} from '@/shared';
 import {
@@ -83,7 +87,7 @@ export const SearchCatalog: React.FC<SearchCatalogProps> = ({
           description={
             isSearching
               ? 'Try searching with different keywords or check spelling.'
-              : 'Try selecting a different genre above.'
+              : 'Try selecting different filters or another genre.'
           }
         />
       );
@@ -105,11 +109,15 @@ export const SearchCatalog: React.FC<SearchCatalogProps> = ({
 
   return (
     <View className={`flex-1 ${className}`}>
-      <View className="px-4 pt-3 pb-2">
-        <SearchInputBar />
+      <View className="px-4 pt-3 pb-2 flex-row items-center">
+        <View className="flex-1 mr-2">
+          <SearchInputBar />
+        </View>
+        <CatalogFilterButton />
       </View>
       <GenreFilterList className="pb-1" />
       <View className="flex-1">{renderContent()}</View>
+      <CatalogFilterModal />
     </View>
   );
 };

@@ -26,8 +26,20 @@ export const movieQueryKeys = {
     [...movieQueryKeys.all, 'trending', timeWindow] as const,
   popular: () => [...movieQueryKeys.all, 'popular'] as const,
   search: (query: string) => [...movieQueryKeys.all, 'search', query] as const,
-  discover: (genreId?: number, sortBy?: string) =>
-    [...movieQueryKeys.all, 'discover', genreId, sortBy] as const,
+  discover: (
+    genreId?: number,
+    sortBy?: string,
+    minRating?: number,
+    releaseYear?: number,
+  ) =>
+    [
+      ...movieQueryKeys.all,
+      'discover',
+      genreId,
+      sortBy,
+      minRating,
+      releaseYear,
+    ] as const,
   details: (id: number) => [...movieQueryKeys.all, 'details', id] as const,
 };
 
@@ -111,11 +123,18 @@ export const useDiscoverMoviesInfiniteQuery = (
   params: DiscoverMoviesQueryParams = {},
 ): UseInfiniteQueryResult<InfiniteData<InfiniteMoviePage>, Error> => {
   return useInfiniteQuery({
-    queryKey: movieQueryKeys.discover(params.genreId, params.sortBy),
+    queryKey: movieQueryKeys.discover(
+      params.genreId,
+      params.sortBy,
+      params.minRating,
+      params.releaseYear,
+    ),
     queryFn: async ({pageParam = 1}) => {
       const response = await movieApi.discoverMovies({
         genreId: params.genreId,
         sortBy: params.sortBy,
+        minRating: params.minRating,
+        releaseYear: params.releaseYear,
         page: pageParam,
       });
       return mapPageResponse(response);

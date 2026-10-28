@@ -67,11 +67,17 @@ export interface SearchMoviesQueryParams {
   page?: number;
 }
 
+export type MovieSortOption =
+  | 'popularity.desc'
+  | 'vote_average.desc'
+  | 'primary_release_date.desc'
+  | 'primary_release_date.asc'
+  | 'vote_count.desc';
+
 export interface DiscoverMoviesQueryParams {
   genreId?: number;
   page?: number;
-  sortBy?:
-    | 'popularity.desc'
-    | 'vote_average.desc'
-    | 'primary_release_date.desc';
+  sortBy?: MovieSortOption;
+  minRating?: number;
+  releaseYear?: number;
 }
