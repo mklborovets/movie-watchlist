@@ -38,8 +38,8 @@ export const MovieHorizontalCard: React.FC<MovieHorizontalCardProps> = ({
         onPress={handlePress}
         accessibilityRole="button"
         accessibilityLabel={movie.title}
-        className="flex-row bg-dark-card border border-dark-border rounded-xl p-2.5 items-center">
-        <View className="overflow-hidden rounded-lg bg-dark-border mr-3">
+        className="flex-row bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl p-2.5 items-center">
+        <View className="overflow-hidden rounded-lg bg-light-border dark:bg-dark-border mr-3">
           {movie.posterUrl ? (
             <Animated.Image
               entering={FadeIn.duration(250)}
@@ -50,7 +50,7 @@ export const MovieHorizontalCard: React.FC<MovieHorizontalCardProps> = ({
           ) : (
             <View
               style={styles.poster}
-              className="items-center justify-center bg-dark-card">
+              className="items-center justify-center bg-light-card dark:bg-dark-card">
               <Film size={28} color="#6B7280" />
             </View>
           )}
@@ -60,7 +60,7 @@ export const MovieHorizontalCard: React.FC<MovieHorizontalCardProps> = ({
           <View>
             <Text
               numberOfLines={1}
-              className="text-dark-text font-bold text-base leading-5">
+              className="text-light-text dark:text-dark-text font-bold text-base leading-5">
               {movie.title}
             </Text>
             <View className="flex-row items-center mt-1.5 space-x-2">
@@ -70,7 +70,7 @@ export const MovieHorizontalCard: React.FC<MovieHorizontalCardProps> = ({
                   {movie.rating}
                 </Text>
               </View>
-              <Text className="text-dark-muted text-xs ml-2">
+              <Text className="text-light-muted dark:text-dark-muted text-xs ml-2">
                 {movie.releaseYear}
               </Text>
             </View>
@@ -78,7 +78,7 @@ export const MovieHorizontalCard: React.FC<MovieHorizontalCardProps> = ({
 
           <Text
             numberOfLines={2}
-            className="text-dark-muted text-xs leading-4 mt-2">
+            className="text-light-muted dark:text-dark-muted text-xs leading-4 mt-2">
             {movie.overview || 'No description available.'}
           </Text>
         </View>

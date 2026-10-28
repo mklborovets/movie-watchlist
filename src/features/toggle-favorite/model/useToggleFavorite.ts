@@ -58,12 +58,12 @@ export const useToggleFavorite = ({
     ? `flex-row items-center justify-center px-4 py-2.5 rounded-full border ${
         isFavorite
           ? 'bg-rose-950/40 border-rose-600'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`
     : `w-10 h-10 rounded-full items-center justify-center border ${
         isFavorite
           ? 'bg-rose-950/40 border-rose-600'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`;
 
   return {

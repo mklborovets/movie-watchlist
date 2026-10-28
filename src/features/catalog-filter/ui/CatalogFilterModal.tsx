@@ -63,12 +63,12 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
 
         <View
           style={styles.modalContent}
-          className="bg-dark-card border-t border-dark-border rounded-t-3xl pt-3 pb-8 px-4">
-          <View className="w-10 h-1 bg-dark-border rounded-full self-center mb-3" />
+          className="bg-light-card dark:bg-dark-card border-t border-light-border dark:border-dark-border rounded-t-3xl pt-3 pb-8 px-4">
+          <View className="w-10 h-1 bg-light-border dark:bg-dark-border rounded-full self-center mb-3" />
 
-          <View className="flex-row items-center justify-between pb-3 border-b border-dark-border/60">
+          <View className="flex-row items-center justify-between pb-3 border-b border-light-border/60 dark:border-dark-border/60">
             <View className="flex-row items-center">
-              <Text className="text-dark-text text-lg font-bold">
+              <Text className="text-light-text dark:text-dark-text text-lg font-bold">
                 Filters & Sorting
               </Text>
               {activeFilterCount > 0 ? (
@@ -85,11 +85,11 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleReset}
-                  className="flex-row items-center px-2.5 py-1 rounded-lg bg-dark-border mr-2"
+                  className="flex-row items-center px-2.5 py-1 rounded-lg bg-light-border dark:bg-dark-border mr-2"
                   accessibilityRole="button"
                   accessibilityLabel="Reset all filters">
                   <RotateCcw size={12} color="#9CA3AF" />
-                  <Text className="text-dark-muted text-xs font-medium ml-1">
+                  <Text className="text-light-muted dark:text-dark-muted text-xs font-medium ml-1">
                     Reset
                   </Text>
                 </TouchableOpacity>
@@ -98,7 +98,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={closeModal}
-                className="w-8 h-8 rounded-full bg-dark-border items-center justify-center"
+                className="w-8 h-8 rounded-full bg-light-border dark:bg-dark-border items-center justify-center"
                 accessibilityRole="button"
                 accessibilityLabel="Close filter modal">
                 <X size={16} color="#9CA3AF" />
@@ -110,7 +110,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
             showsVerticalScrollIndicator={false}
             className="mt-3 flex-grow-0">
             <View className="mb-5">
-              <Text className="text-dark-text font-bold text-sm mb-2.5">
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-2.5">
                 Sort By
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -124,11 +124,13 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                       className={`px-3 py-2 rounded-xl border flex-row items-center ${
                         isSelected
                           ? 'bg-brand-primary border-brand-primary'
-                          : 'bg-dark-bg border-dark-border'
+                          : 'bg-light-background dark:bg-dark-card border-light-border dark:border-dark-border'
                       }`}>
                       <Text
                         className={`text-xs font-semibold ${
-                          isSelected ? 'text-white' : 'text-dark-text'
+                          isSelected
+                            ? 'text-white'
+                            : 'text-light-text dark:text-dark-text'
                         }`}>
                         {option.label}
                       </Text>
@@ -142,7 +144,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
             </View>
 
             <View className="mb-5">
-              <Text className="text-dark-text font-bold text-sm mb-2.5">
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-2.5">
                 Genres
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -152,13 +154,13 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                   className={`px-3 py-1.5 rounded-full border ${
                     selectedGenreId === null
                       ? 'bg-brand-primary border-brand-primary'
-                      : 'bg-dark-bg border-dark-border'
+                      : 'bg-light-background dark:bg-dark-card border-light-border dark:border-dark-border'
                   }`}>
                   <Text
                     className={`text-xs font-semibold ${
                       selectedGenreId === null
                         ? 'text-white'
-                        : 'text-dark-muted'
+                        : 'text-light-muted dark:text-dark-muted'
                     }`}>
                     All Genres
                   </Text>
@@ -174,11 +176,13 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                       className={`px-3 py-1.5 rounded-full border ${
                         isSelected
                           ? 'bg-brand-primary border-brand-primary'
-                          : 'bg-dark-bg border-dark-border'
+                          : 'bg-light-background dark:bg-dark-card border-light-border dark:border-dark-border'
                       }`}>
                       <Text
                         className={`text-xs font-semibold ${
-                          isSelected ? 'text-white' : 'text-dark-muted'
+                          isSelected
+                            ? 'text-white'
+                            : 'text-light-muted dark:text-dark-muted'
                         }`}>
                         {genre.name}
                       </Text>
@@ -189,7 +193,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
             </View>
 
             <View className="mb-5">
-              <Text className="text-dark-text font-bold text-sm mb-2.5">
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-2.5">
                 Minimum Rating
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -203,7 +207,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                       className={`px-3 py-1.5 rounded-xl border flex-row items-center ${
                         isSelected
                           ? 'bg-brand-primary border-brand-primary'
-                          : 'bg-dark-bg border-dark-border'
+                          : 'bg-light-background dark:bg-dark-card border-light-border dark:border-dark-border'
                       }`}>
                       {option.value !== null ? (
                         <Star
@@ -215,7 +219,9 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                       ) : null}
                       <Text
                         className={`text-xs font-semibold ${
-                          isSelected ? 'text-white' : 'text-dark-text'
+                          isSelected
+                            ? 'text-white'
+                            : 'text-light-text dark:text-dark-text'
                         }`}>
                         {option.label}
                       </Text>
@@ -226,7 +232,7 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
             </View>
 
             <View className="mb-6">
-              <Text className="text-dark-text font-bold text-sm mb-2.5">
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-2.5">
                 Release Year
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -240,11 +246,13 @@ export const CatalogFilterModal: React.FC<CatalogFilterModalProps> = () => {
                       className={`px-3 py-1.5 rounded-xl border ${
                         isSelected
                           ? 'bg-brand-primary border-brand-primary'
-                          : 'bg-dark-bg border-dark-border'
+                          : 'bg-light-background dark:bg-dark-card border-light-border dark:border-dark-border'
                       }`}>
                       <Text
                         className={`text-xs font-semibold ${
-                          isSelected ? 'text-white' : 'text-dark-text'
+                          isSelected
+                            ? 'text-white'
+                            : 'text-light-text dark:text-dark-text'
                         }`}>
                         {option.label}
                       </Text>

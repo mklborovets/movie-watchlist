@@ -27,13 +27,13 @@ export const EmptyStateView: React.FC<EmptyStateViewProps> = ({
   return (
     <View
       className={`flex-1 items-center justify-center px-6 py-12 ${className}`}>
-      <View className="w-20 h-20 rounded-full bg-dark-card border border-dark-border items-center justify-center mb-4">
+      <View className="w-20 h-20 rounded-full bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border items-center justify-center mb-4">
         {icon}
       </View>
-      <Text className="text-dark-text text-xl font-bold text-center mb-2">
+      <Text className="text-light-text dark:text-dark-text text-xl font-bold text-center mb-2">
         {title}
       </Text>
-      <Text className="text-dark-muted text-sm text-center max-w-xs leading-5 mb-6">
+      <Text className="text-light-muted dark:text-dark-muted text-sm text-center max-w-xs leading-5 mb-6">
         {description}
       </Text>
       {hasAction && actionLabel ? (

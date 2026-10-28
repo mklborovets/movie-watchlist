@@ -26,7 +26,7 @@ export const SegmentedControl = <T extends string = string>({
 
   return (
     <View
-      className={`flex-row bg-dark-card border border-dark-border rounded-xl p-1 ${className}`}>
+      className={`flex-row bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl p-1 ${className}`}>
       {options.map(option => {
         const active = isSelected(option.value);
         return (
@@ -39,18 +39,20 @@ export const SegmentedControl = <T extends string = string>({
             }`}>
             <Text
               className={`text-sm font-semibold ${
-                active ? 'text-white' : 'text-dark-muted'
+                active ? 'text-white' : 'text-light-muted dark:text-dark-muted'
               }`}>
               {option.label}
             </Text>
             {typeof option.count === 'number' ? (
               <View
                 className={`ml-1.5 px-1.5 py-0.5 rounded-full ${
-                  active ? 'bg-white/20' : 'bg-dark-border'
+                  active ? 'bg-white/20' : 'bg-light-border dark:bg-dark-border'
                 }`}>
                 <Text
                   className={`text-xs font-bold ${
-                    active ? 'text-white' : 'text-dark-muted'
+                    active
+                      ? 'text-white'
+                      : 'text-light-muted dark:text-dark-muted'
                   }`}>
                   {option.count}
                 </Text>

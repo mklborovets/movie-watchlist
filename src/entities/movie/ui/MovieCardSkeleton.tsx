@@ -35,7 +35,7 @@ export const MovieCardSkeleton: React.FC<MovieCardSkeletonProps> = ({
         {items.map(item => (
           <View
             key={item}
-            className="flex-row bg-dark-card border border-dark-border rounded-xl p-2.5 items-center mb-3">
+            className="flex-row bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl p-2.5 items-center mb-3">
             <SkeletonBlock style={styles.horizontalPoster} />
             <View className="flex-1 ml-3 justify-between py-1">
               <View>

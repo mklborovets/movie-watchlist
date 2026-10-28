@@ -32,11 +32,11 @@ export const GenreBadge: React.FC<GenreBadgeProps> = ({
       className={`px-3 py-1.5 rounded-full border items-center justify-center ${
         isSelected
           ? 'bg-brand-primary border-brand-primary'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`}>
       <Text
         className={`text-xs font-semibold ${
-          isSelected ? 'text-white' : 'text-dark-muted'
+          isSelected ? 'text-white' : 'text-light-muted dark:text-dark-muted'
         }`}>
         {label}
       </Text>

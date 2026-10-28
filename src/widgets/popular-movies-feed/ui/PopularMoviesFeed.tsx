@@ -52,7 +52,7 @@ export const PopularMoviesFeed: React.FC<PopularMoviesFeedProps> = ({
       {headerComponent}
       <View className="flex-row items-center px-4 pt-2 pb-3">
         <Sparkles size={20} color="#F5C518" />
-        <Text className="text-dark-text text-lg font-bold ml-1.5">
+        <Text className="text-light-text dark:text-dark-text text-lg font-bold ml-1.5">
           Popular Movies
         </Text>
       </View>
@@ -76,7 +76,7 @@ export const PopularMoviesFeed: React.FC<PopularMoviesFeedProps> = ({
         {headerComponent}
         <View className="flex-row items-center px-4 pt-2 pb-3">
           <Sparkles size={20} color="#F5C518" />
-          <Text className="text-dark-text text-lg font-bold ml-1.5">
+          <Text className="text-light-text dark:text-dark-text text-lg font-bold ml-1.5">
             Popular Movies
           </Text>
         </View>

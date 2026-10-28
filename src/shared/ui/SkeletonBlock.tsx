@@ -23,7 +23,7 @@ export const SkeletonBlock: React.FC<SkeletonBlockProps> = ({
   return (
     <Animated.View
       style={[{width, height, borderRadius}, animatedStyle, style]}
-      className={`bg-dark-card border border-dark-border ${className}`}
+      className={`bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border ${className}`}
     />
   );
 };

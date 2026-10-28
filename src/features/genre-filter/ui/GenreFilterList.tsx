@@ -49,11 +49,11 @@ export const GenreFilterList: React.FC<GenreFilterListProps> = ({
       className={`px-3 py-1.5 rounded-full border mr-2 items-center justify-center ${
         isAllSelected
           ? 'bg-brand-primary border-brand-primary'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       }`}>
       <Text
         className={`text-xs font-semibold ${
-          isAllSelected ? 'text-white' : 'text-dark-muted'
+          isAllSelected ? 'text-white' : 'text-light-muted dark:text-dark-muted'
         }`}>
         All
       </Text>

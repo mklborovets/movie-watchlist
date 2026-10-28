@@ -49,7 +49,9 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         {isExtended ? (
           <Text
             className={`text-xs font-semibold ml-2 ${
-              isFavorite ? 'text-brand-primary' : 'text-dark-text'
+              isFavorite
+                ? 'text-brand-primary'
+                : 'text-light-text dark:text-dark-text'
             }`}>
             {buttonLabel}
           </Text>

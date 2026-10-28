@@ -30,16 +30,17 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   className = '',
   style,
 }) => {
-  const {isScrollable, paddingClass} = useScreenContainer({
-    scrollable,
-    withPadding,
-  });
+  const {isScrollable, paddingClass, statusBarStyle, statusBarBg} =
+    useScreenContainer({
+      scrollable,
+      withPadding,
+    });
 
   return (
     <SafeAreaView
-      className={`flex-1 bg-dark-background ${className}`}
+      className={`flex-1 bg-light-background dark:bg-dark-background ${className}`}
       style={style}>
-      <StatusBar barStyle="light-content" backgroundColor="#0B0D13" />
+      <StatusBar barStyle={statusBarStyle} backgroundColor={statusBarBg} />
       {isScrollable ? (
         <ScrollView
           className={`flex-1 ${paddingClass}`}

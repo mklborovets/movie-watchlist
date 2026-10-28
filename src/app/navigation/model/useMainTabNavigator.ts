@@ -1,15 +1,18 @@
 import React from 'react';
 import {Home, Search, Bookmark} from 'lucide-react-native';
 import {BottomTabNavigationOptions} from '@react-navigation/bottom-tabs';
+import {useSwitchTheme} from '@/features/switch-theme';
 
 export const useMainTabNavigator = () => {
+  const {isDark} = useSwitchTheme();
+
   const screenOptions: BottomTabNavigationOptions = {
     headerShown: false,
     tabBarActiveTintColor: '#E50914',
-    tabBarInactiveTintColor: '#9CA3AF',
+    tabBarInactiveTintColor: isDark ? '#9CA3AF' : '#6B7280',
     tabBarStyle: {
-      backgroundColor: '#161922',
-      borderTopColor: '#232733',
+      backgroundColor: isDark ? '#161922' : '#FFFFFF',
+      borderTopColor: isDark ? '#232733' : '#E5E7EB',
       borderTopWidth: 1,
       height: 60,
       paddingBottom: 8,

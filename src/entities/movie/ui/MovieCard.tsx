@@ -40,7 +40,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({
         onPress={handlePress}
         accessibilityRole="button"
         accessibilityLabel={movie.title}>
-        <View className="relative rounded-xl overflow-hidden bg-dark-card border border-dark-border">
+        <View className="relative rounded-xl overflow-hidden bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border">
           {movie.posterUrl ? (
             <Animated.Image
               entering={FadeIn.duration(300)}
@@ -51,7 +51,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({
           ) : (
             <View
               style={styles.poster}
-              className="items-center justify-center bg-dark-card">
+              className="items-center justify-center bg-light-card dark:bg-dark-card">
               <Film size={36} color="#6B7280" />
             </View>
           )}
@@ -65,10 +65,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({
         <View className="mt-2">
           <Text
             numberOfLines={1}
-            className="text-dark-text font-semibold text-sm">
+            className="text-light-text dark:text-dark-text font-semibold text-sm">
             {movie.title}
           </Text>
-          <Text className="text-dark-muted text-xs mt-0.5">
+          <Text className="text-light-muted dark:text-dark-muted text-xs mt-0.5">
             {movie.releaseYear}
           </Text>
         </View>

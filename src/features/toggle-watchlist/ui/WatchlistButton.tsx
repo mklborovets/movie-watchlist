@@ -49,7 +49,9 @@ export const WatchlistButton: React.FC<WatchlistButtonProps> = ({
         {isExtended ? (
           <Text
             className={`text-xs font-semibold ml-2 ${
-              isInWatchlist ? 'text-brand-primary' : 'text-dark-text'
+              isInWatchlist
+                ? 'text-brand-primary'
+                : 'text-light-text dark:text-dark-text'
             }`}>
             {buttonLabel}
           </Text>

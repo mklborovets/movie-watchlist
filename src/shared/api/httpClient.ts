@@ -1,3 +1,4 @@
+import {Platform} from 'react-native';
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -5,8 +6,18 @@ import axios, {
 } from 'axios';
 import {ENV, API_TIMEOUT_MS} from '@/shared/config';
 
+const resolveBaseUrl = (): string => {
+  if (
+    Platform.OS === 'android' &&
+    ENV.tmdbApiBaseUrl.startsWith('https://api.themoviedb.org')
+  ) {
+    return ENV.tmdbApiBaseUrl.replace('https://', 'http://');
+  }
+  return ENV.tmdbApiBaseUrl;
+};
+
 export const httpClient: AxiosInstance = axios.create({
-  baseURL: ENV.tmdbApiBaseUrl,
+  baseURL: resolveBaseUrl(),
   timeout: API_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
@@ -16,6 +27,13 @@ export const httpClient: AxiosInstance = axios.create({
 
 httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    if (
+      Platform.OS === 'android' &&
+      config.baseURL &&
+      config.baseURL.startsWith('https://api.themoviedb.org')
+    ) {
+      config.baseURL = config.baseURL.replace('https://', 'http://');
+    }
     if (ENV.tmdbBearerToken) {
       config.headers.Authorization = `Bearer ${ENV.tmdbBearerToken}`;
     }

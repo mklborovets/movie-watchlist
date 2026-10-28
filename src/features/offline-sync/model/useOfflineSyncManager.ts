@@ -58,12 +58,12 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
     }
     isSavedMoviesLoadStarted = true;
     loadPersistedSavedMovies().then(async () => {
-      if (useSavedMoviesStore.getState().isInitialized) {
+      if (useSavedMoviesStore.getState().isInitialized && isOnline) {
         await syncPendingMutations();
         await syncRemoteSavedMovies();
       }
     });
-  }, [loadPersistedSavedMovies, syncRemoteSavedMovies]);
+  }, [isOnline, loadPersistedSavedMovies, syncRemoteSavedMovies]);
 
   useEffect(() => {
     if (!isOnline || !isQueueInitialized || isSyncing || queue.length === 0) {

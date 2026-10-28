@@ -19,7 +19,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
 
   return (
     <View
-      className={`flex-row items-center justify-between py-3 px-4 bg-dark-background border-b border-dark-border ${className}`}>
+      className={`flex-row items-center justify-between py-3 px-4 bg-light-background dark:bg-dark-background border-b border-light-border dark:border-dark-border ${className}`}>
       <View className="flex-row items-center">
         <Text className="text-brand-primary text-xl font-black tracking-wider">
           {title}

@@ -58,12 +58,12 @@ export const useToggleWatchlist = ({
     ? `flex-row items-center justify-center px-4 py-2.5 rounded-full border ${
         isInWatchlist
           ? 'bg-brand-primary/20 border-brand-primary'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`
     : `w-10 h-10 rounded-full items-center justify-center border ${
         isInWatchlist
           ? 'bg-brand-primary/20 border-brand-primary'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`;
 
   return {

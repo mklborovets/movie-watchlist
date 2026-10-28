@@ -23,7 +23,8 @@ const sizeStyles: Record<IconButtonSize, string> = {
 
 const variantStyles: Record<IconButtonVariant, string> = {
   primary: 'bg-brand-primary border-transparent',
-  secondary: 'bg-dark-card border border-dark-border',
+  secondary:
+    'bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border',
   ghost: 'bg-transparent border-transparent',
   danger: 'bg-red-950/80 border border-red-800/50',
   glass: 'bg-black/40 border border-white/20',

@@ -12,11 +12,11 @@ export const ThemeToggleButton: React.FC = () => {
       onPress={toggleTheme}
       accessibilityRole="button"
       accessibilityLabel="Toggle color theme"
-      className="w-10 h-10 rounded-full items-center justify-center bg-dark-card border border-dark-border">
+      className="w-10 h-10 rounded-full items-center justify-center bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border">
       {isDark ? (
         <Sun size={20} color="#F5C518" />
       ) : (
-        <Moon size={20} color="#111827" />
+        <Moon size={20} color="#4B5563" />
       )}
     </TouchableOpacity>
   );

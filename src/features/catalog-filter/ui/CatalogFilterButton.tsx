@@ -22,7 +22,7 @@ export const CatalogFilterButton: React.FC<CatalogFilterButtonProps> = ({
       className={`relative h-11 px-3.5 rounded-xl border flex-row items-center justify-center ${
         hasActiveFilters
           ? 'bg-brand-primary/15 border-brand-primary'
-          : 'bg-dark-card border-dark-border'
+          : 'bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border'
       } ${className}`}>
       <SlidersHorizontal
         size={18}

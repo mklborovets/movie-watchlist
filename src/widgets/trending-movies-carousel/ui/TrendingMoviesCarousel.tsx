@@ -35,7 +35,7 @@ export const TrendingMoviesCarousel: React.FC<TrendingMoviesCarouselProps> = ({
     <View className={`my-4 ${className}`}>
       <View className="flex-row items-center px-4 mb-3">
         <Flame size={20} color="#E50914" />
-        <Text className="text-dark-text text-lg font-bold ml-1.5">
+        <Text className="text-light-text dark:text-dark-text text-lg font-bold ml-1.5">
           Trending Today
         </Text>
       </View>

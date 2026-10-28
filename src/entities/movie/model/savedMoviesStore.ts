@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {STORAGE_KEYS, asyncStorageAdapter} from '@/shared';
+import {STORAGE_KEYS, asyncStorageAdapter, ENV} from '@/shared';
 import {Movie} from './types';
 import {movieApi} from '../api/movieApi';
 import {mapMovieDtoToMovie} from '../lib/mapMovieDto';
@@ -186,6 +186,9 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
     if (get().isSyncingRemote) {
       return;
     }
+    if (!ENV.tmdbAccountId || !ENV.tmdbBearerToken) {
+      return;
+    }
     try {
       set({isSyncingRemote: true});
       const [remoteWatchlist, remoteFavorites] = await Promise.all([
@@ -217,8 +220,7 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
       });
 
       await persistSavedMovies(nextWatchlist, nextFavorites);
-    } catch (error) {
-      console.warn('[savedMoviesStore] syncRemoteSavedMovies failed:', error);
+    } catch {
       set({isSyncingRemote: false});
     }
   },

@@ -65,7 +65,7 @@ export const SavedMoviesBoard: React.FC<SavedMoviesBoardProps> = ({
   return (
     <View className={`flex-1 ${className}`}>
       <View className="px-4 pt-4 pb-2">
-        <Text className="text-dark-text text-2xl font-black tracking-wide mb-3">
+        <Text className="text-light-text dark:text-dark-text text-2xl font-black tracking-wide mb-3">
           Saved Movies
         </Text>
         <SegmentedControl<SavedTab>

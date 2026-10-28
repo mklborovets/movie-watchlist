@@ -85,10 +85,6 @@ export const syncPendingMutations = async (): Promise<void> => {
         await executeItem(item);
         useSyncQueueStore.getState().dequeueMutation(item.id);
       } catch (error) {
-        console.warn(
-          `[syncQueueRunner] Mutation "${item.action}" for movie ${item.movieId} failed:`,
-          error,
-        );
         const retryCount = (item.retryCount ?? 0) + 1;
         if (isPermanentError(error) || retryCount >= MAX_SYNC_RETRIES) {
           useSyncQueueStore.getState().dequeueMutation(item.id);

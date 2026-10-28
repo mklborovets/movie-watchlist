@@ -57,7 +57,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
       className={containerClassName}>
       {icon}
       {isBadgeVisible ? (
-        <View className="absolute -top-1 -right-1 bg-brand-primary min-w-[18px] h-[18px] px-1 rounded-full items-center justify-center border-2 border-dark-background">
+        <View className="absolute -top-1 -right-1 bg-brand-primary min-w-[18px] h-[18px] px-1 rounded-full items-center justify-center border-2 border-light-background dark:border-dark-background">
           <Text className="text-white text-[10px] font-bold">
             {formattedBadgeCount}
           </Text>

@@ -101,7 +101,7 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
         ) : (
           <View
             style={styles.backdrop}
-            className="bg-dark-card items-center justify-center">
+            className="bg-light-card dark:bg-dark-card items-center justify-center">
             <Film size={48} color="#4B5563" />
           </View>
         )}
@@ -117,7 +117,7 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
       </View>
 
       <View className="px-4 -mt-16 flex-row">
-        <View className="shadow-lg shadow-black/80 rounded-xl overflow-hidden bg-dark-card border border-dark-border">
+        <View className="shadow-lg shadow-black/80 rounded-xl overflow-hidden bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border">
           {movie.posterUrl ? (
             <Animated.Image
               source={{uri: movie.posterUrl}}
@@ -127,7 +127,7 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
           ) : (
             <View
               style={styles.poster}
-              className="items-center justify-center bg-dark-card">
+              className="items-center justify-center bg-light-card dark:bg-dark-card">
               <Film size={36} color="#6B7280" />
             </View>
           )}
@@ -136,13 +136,13 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
         <View className="flex-1 ml-4 justify-end pb-1">
           <Text
             numberOfLines={2}
-            className="text-dark-text text-xl font-bold leading-6">
+            className="text-light-text dark:text-dark-text text-xl font-bold leading-6">
             {movie.title}
           </Text>
           {movie.tagline ? (
             <Text
               numberOfLines={2}
-              className="text-dark-muted text-xs italic mt-1">
+              className="text-light-muted dark:text-dark-muted text-xs italic mt-1">
               {movie.tagline}
             </Text>
           ) : null}
@@ -155,22 +155,22 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
           <Text className="text-white text-xs font-bold ml-1">
             {movie.rating}
           </Text>
-          <Text className="text-dark-muted text-[10px] ml-1">
+          <Text className="text-light-muted dark:text-dark-muted text-[10px] ml-1">
             ({movie.voteCount})
           </Text>
         </View>
 
-        <View className="flex-row items-center bg-dark-card px-2 py-1 rounded-md border border-dark-border ml-2">
+        <View className="flex-row items-center bg-light-card dark:bg-dark-card px-2 py-1 rounded-md border border-light-border dark:border-dark-border ml-2">
           <Calendar size={13} color="#9CA3AF" />
-          <Text className="text-dark-muted text-xs ml-1.5 font-medium">
+          <Text className="text-light-muted dark:text-dark-muted text-xs ml-1.5 font-medium">
             {movie.releaseYear}
           </Text>
         </View>
 
         {movie.runtimeFormatted !== 'N/A' ? (
-          <View className="flex-row items-center bg-dark-card px-2 py-1 rounded-md border border-dark-border ml-2">
+          <View className="flex-row items-center bg-light-card dark:bg-dark-card px-2 py-1 rounded-md border border-light-border dark:border-dark-border ml-2">
             <Clock size={13} color="#9CA3AF" />
-            <Text className="text-dark-muted text-xs ml-1.5 font-medium">
+            <Text className="text-light-muted dark:text-dark-muted text-xs ml-1.5 font-medium">
               {movie.runtimeFormatted}
             </Text>
           </View>
@@ -197,10 +197,10 @@ export const MovieDetailsView: React.FC<MovieDetailsViewProps> = ({
       </View>
 
       <View className="px-4 mt-6">
-        <Text className="text-dark-text text-base font-bold mb-2">
+        <Text className="text-light-text dark:text-dark-text text-base font-bold mb-2">
           Overview
         </Text>
-        <Text className="text-dark-muted text-sm leading-6">
+        <Text className="text-light-muted dark:text-dark-muted text-sm leading-6">
           {movie.overview || 'No overview available for this movie.'}
         </Text>
       </View>

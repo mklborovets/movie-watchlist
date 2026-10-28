@@ -17,7 +17,7 @@ export const SearchInputBar: React.FC<SearchInputBarProps> = ({
 
   return (
     <View
-      className={`flex-row items-center bg-dark-card border border-dark-border rounded-xl px-3 py-2.5 ${className}`}>
+      className={`flex-row items-center bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl px-3 py-2.5 ${className}`}>
       <Search size={18} color="#9CA3AF" />
       <TextInput
         value={query}
@@ -28,7 +28,7 @@ export const SearchInputBar: React.FC<SearchInputBarProps> = ({
         autoCorrect={false}
         autoCapitalize="none"
         returnKeyType="search"
-        className="flex-1 ml-2 text-dark-text text-sm py-0"
+        className="flex-1 ml-2 text-light-text dark:text-dark-text text-sm py-0"
       />
       {hasQuery ? (
         <TouchableOpacity
@@ -36,7 +36,7 @@ export const SearchInputBar: React.FC<SearchInputBarProps> = ({
           onPress={handleClear}
           accessibilityRole="button"
           accessibilityLabel="Clear search input"
-          className="w-6 h-6 items-center justify-center rounded-full bg-dark-border">
+          className="w-6 h-6 items-center justify-center rounded-full bg-light-border dark:bg-dark-border">
           <X size={12} color="#9CA3AF" />
         </TouchableOpacity>
       ) : null}
