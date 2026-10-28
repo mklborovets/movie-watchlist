@@ -1,9 +1,16 @@
 import 'react-native';
 import React from 'react';
+import {it, afterEach} from '@jest/globals';
+import renderer, {act} from 'react-test-renderer';
 import App from '../App';
-import {it} from '@jest/globals';
-import renderer from 'react-test-renderer';
+import {queryClient} from '../src/shared';
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+afterEach(() => {
+  queryClient.clear();
+});
+
+it('renders correctly', async () => {
+  await act(async () => {
+    renderer.create(<App />);
+  });
 });
