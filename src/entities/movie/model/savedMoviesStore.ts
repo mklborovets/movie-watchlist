@@ -1,6 +1,8 @@
 import {create} from 'zustand';
 import {STORAGE_KEYS, asyncStorageAdapter} from '@/shared';
 import {Movie} from './types';
+import {movieApi} from '../api/movieApi';
+import {mapMovieDtoToMovie} from '../lib/mapMovieDto';
 
 interface PersistedSavedMoviesData {
   watchlist: Movie[];
@@ -11,6 +13,7 @@ export interface SavedMoviesState {
   watchlist: Movie[];
   favorites: Movie[];
   isInitialized: boolean;
+  isSyncingRemote: boolean;
   addToWatchlist: (movie: Movie) => void;
   removeFromWatchlist: (movieId: number) => void;
   addToFavorites: (movie: Movie) => void;
@@ -18,12 +21,15 @@ export interface SavedMoviesState {
   isMovieInWatchlist: (movieId: number) => boolean;
   isMovieInFavorites: (movieId: number) => boolean;
   loadPersistedSavedMovies: () => Promise<void>;
+  setRemoteSavedMovies: (watchlist: Movie[], favorites: Movie[]) => void;
+  syncRemoteSavedMovies: () => Promise<void>;
 }
 
 export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
   watchlist: [],
   favorites: [],
   isInitialized: false,
+  isSyncingRemote: false,
 
   addToWatchlist: (movie: Movie) => {
     const {watchlist, favorites} = get();
@@ -105,5 +111,52 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
       return;
     }
     set({isInitialized: true});
+  },
+
+  setRemoteSavedMovies: (watchlist: Movie[], favorites: Movie[]) => {
+    set({watchlist, favorites});
+    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
+      STORAGE_KEYS.savedMovies,
+      {
+        watchlist,
+        favorites,
+      },
+    );
+  },
+
+  syncRemoteSavedMovies: async () => {
+    try {
+      set({isSyncingRemote: true});
+      const [watchlistResponse, favoritesResponse] = await Promise.all([
+        movieApi.fetchAccountWatchlist(1),
+        movieApi.fetchAccountFavorites(1),
+      ]);
+
+      const watchlistMovies = watchlistResponse.results.map(mapMovieDtoToMovie);
+      const favoriteMovies = favoritesResponse.results.map(mapMovieDtoToMovie);
+
+      const deduplicatedWatchlist = Array.from(
+        new Map(watchlistMovies.map(movie => [movie.id, movie])).values(),
+      );
+      const deduplicatedFavorites = Array.from(
+        new Map(favoriteMovies.map(movie => [movie.id, movie])).values(),
+      );
+
+      set({
+        watchlist: deduplicatedWatchlist,
+        favorites: deduplicatedFavorites,
+        isSyncingRemote: false,
+      });
+
+      await asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
+        STORAGE_KEYS.savedMovies,
+        {
+          watchlist: deduplicatedWatchlist,
+          favorites: deduplicatedFavorites,
+        },
+      );
+    } catch {
+      set({isSyncingRemote: false});
+    }
   },
 }));

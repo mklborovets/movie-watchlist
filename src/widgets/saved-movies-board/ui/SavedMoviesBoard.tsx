@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, RefreshControl, StyleSheet} from 'react-native';
 import {Trash2} from 'lucide-react-native';
 import {Movie, MovieHorizontalCard} from '@/entities/movie';
 import {SegmentedControl, IconButton, EmptyStateView} from '@/shared';
@@ -18,6 +18,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 32,
   },
+  emptyListContent: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
 });
 
 export const SavedMoviesBoard: React.FC<SavedMoviesBoardProps> = ({
@@ -33,6 +38,8 @@ export const SavedMoviesBoard: React.FC<SavedMoviesBoardProps> = ({
     emptyTitle,
     emptyDescription,
     emptyIconName,
+    isRefreshing,
+    handleRefresh,
     handleTabSelect,
     handleMoviePress,
     handleRemoveMovie,
@@ -69,23 +76,32 @@ export const SavedMoviesBoard: React.FC<SavedMoviesBoardProps> = ({
       </View>
 
       <View className="flex-1 mt-2">
-        {isEmpty ? (
-          <EmptyStateView
-            iconName={emptyIconName}
-            title={emptyTitle}
-            description={emptyDescription}
-            actionLabel="Discover Movies"
-            onActionPress={handleExplorePress}
-          />
-        ) : (
-          <FlatList
-            data={currentMovies}
-            keyExtractor={item => String(item.id)}
-            renderItem={renderItem}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
+        <FlatList
+          data={currentMovies}
+          keyExtractor={item => String(item.id)}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            <EmptyStateView
+              iconName={emptyIconName}
+              title={emptyTitle}
+              description={emptyDescription}
+              actionLabel="Discover Movies"
+              onActionPress={handleExplorePress}
+            />
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor="#E50914"
+              colors={['#E50914']}
+            />
+          }
+          contentContainerStyle={
+            isEmpty ? styles.emptyListContent : styles.listContent
+          }
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </View>
   );

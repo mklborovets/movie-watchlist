@@ -1,4 +1,4 @@
-import {httpClient} from '@/shared';
+import {httpClient, ENV} from '@/shared';
 import {
   MovieDto,
   MovieDetailsDto,
@@ -68,6 +68,38 @@ export const movieApi = {
 
   async fetchMovieDetails(movieId: number): Promise<MovieDetailsDto> {
     const response = await httpClient.get<MovieDetailsDto>(`/movie/${movieId}`);
+    return response.data;
+  },
+
+  async fetchAccountWatchlist(
+    page: number = 1,
+  ): Promise<MovieApiResponseDto<MovieDto>> {
+    const accountId = ENV.tmdbAccountId;
+    const response = await httpClient.get<MovieApiResponseDto<MovieDto>>(
+      `/account/${accountId}/watchlist/movies`,
+      {
+        params: {
+          page,
+          sort_by: 'created_at.desc',
+        },
+      },
+    );
+    return response.data;
+  },
+
+  async fetchAccountFavorites(
+    page: number = 1,
+  ): Promise<MovieApiResponseDto<MovieDto>> {
+    const accountId = ENV.tmdbAccountId;
+    const response = await httpClient.get<MovieApiResponseDto<MovieDto>>(
+      `/account/${accountId}/favorite/movies`,
+      {
+        params: {
+          page,
+          sort_by: 'created_at.desc',
+        },
+      },
+    );
     return response.data;
   },
 };

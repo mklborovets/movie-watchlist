@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useCallback} from 'react';
 import {Movie, useSavedMoviesStore} from '@/entities/movie';
 import {useSyncQueueStore} from '@/features/offline-sync';
 import {SegmentedControlOption, EmptyStateIconName} from '@/shared';
@@ -15,9 +15,14 @@ export const useSavedMoviesBoard = ({
   onExplorePress,
 }: UseSavedMoviesBoardProps = {}) => {
   const [activeTab, setActiveTab] = useState<SavedTab>('watchlist');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const watchlist = useSavedMoviesStore(state => state.watchlist);
   const favorites = useSavedMoviesStore(state => state.favorites);
+  const isSyncingRemote = useSavedMoviesStore(state => state.isSyncingRemote);
+  const syncRemoteSavedMovies = useSavedMoviesStore(
+    state => state.syncRemoteSavedMovies,
+  );
   const removeFromWatchlist = useSavedMoviesStore(
     state => state.removeFromWatchlist,
   );
@@ -79,6 +84,12 @@ export const useSavedMoviesBoard = ({
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await syncRemoteSavedMovies();
+    setIsRefreshing(false);
+  }, [syncRemoteSavedMovies]);
+
   return {
     activeTab,
     tabOptions,
@@ -87,6 +98,8 @@ export const useSavedMoviesBoard = ({
     emptyTitle,
     emptyDescription,
     emptyIconName,
+    isRefreshing: isRefreshing || isSyncingRemote,
+    handleRefresh,
     handleTabSelect,
     handleMoviePress,
     handleRemoveMovie,

@@ -27,6 +27,9 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
   const loadPersistedSavedMovies = useSavedMoviesStore(
     state => state.loadPersistedSavedMovies,
   );
+  const syncRemoteSavedMovies = useSavedMoviesStore(
+    state => state.syncRemoteSavedMovies,
+  );
 
   useEffect(() => {
     if (!isInitialized) {
@@ -36,9 +39,18 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
 
   useEffect(() => {
     if (!isSavedMoviesInitialized) {
-      loadPersistedSavedMovies();
+      loadPersistedSavedMovies().then(() => {
+        if (isOnline) {
+          syncRemoteSavedMovies();
+        }
+      });
     }
-  }, [isSavedMoviesInitialized, loadPersistedSavedMovies]);
+  }, [
+    isSavedMoviesInitialized,
+    loadPersistedSavedMovies,
+    isOnline,
+    syncRemoteSavedMovies,
+  ]);
 
   const executeItem = async (item: SyncQueueItem): Promise<boolean> => {
     try {
@@ -90,8 +102,15 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
       }
     }
 
+    await syncRemoteSavedMovies();
     setIsSyncing(false);
-  }, [isOnline, isSyncing, setIsSyncing, dequeueMutation]);
+  }, [
+    isOnline,
+    isSyncing,
+    setIsSyncing,
+    dequeueMutation,
+    syncRemoteSavedMovies,
+  ]);
 
   useEffect(() => {
     if (isOnline && queue.length > 0 && !isSyncing) {
