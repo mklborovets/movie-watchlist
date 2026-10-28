@@ -9,6 +9,57 @@ interface PersistedSavedMoviesData {
   favorites: Movie[];
 }
 
+export type PendingSavedMovieMutation = {
+  action:
+    | 'ADD_WATCHLIST'
+    | 'REMOVE_WATCHLIST'
+    | 'ADD_FAVORITE'
+    | 'REMOVE_FAVORITE';
+  movieId: number;
+};
+
+const MAX_REMOTE_PAGES = 10;
+
+const dedupeById = (movies: Movie[]): Movie[] =>
+  Array.from(new Map(movies.map(movie => [movie.id, movie])).values());
+
+const fetchAllPages = async (
+  fetchPage: (page: number) => Promise<{
+    results: Parameters<typeof mapMovieDtoToMovie>[0][];
+    total_pages: number;
+  }>,
+): Promise<Movie[]> => {
+  const first = await fetchPage(1);
+  const movies = first.results.map(mapMovieDtoToMovie);
+  const lastPage = Math.min(first.total_pages || 1, MAX_REMOTE_PAGES);
+  for (let page = 2; page <= lastPage; page++) {
+    const next = await fetchPage(page);
+    movies.push(...next.results.map(mapMovieDtoToMovie));
+  }
+  return dedupeById(movies);
+};
+
+const applyPending = (
+  remote: Movie[],
+  local: Movie[],
+  pending: PendingSavedMovieMutation[],
+  addAction: PendingSavedMovieMutation['action'],
+  removeAction: PendingSavedMovieMutation['action'],
+): Movie[] => {
+  let result = remote;
+  for (const mutation of pending) {
+    if (mutation.action === removeAction) {
+      result = result.filter(movie => movie.id !== mutation.movieId);
+    } else if (mutation.action === addAction) {
+      const localMovie = local.find(movie => movie.id === mutation.movieId);
+      if (localMovie && !result.some(movie => movie.id === localMovie.id)) {
+        result = [localMovie, ...result];
+      }
+    }
+  }
+  return result;
+};
+
 export interface SavedMoviesState {
   watchlist: Movie[];
   favorites: Movie[];
@@ -22,8 +73,25 @@ export interface SavedMoviesState {
   isMovieInFavorites: (movieId: number) => boolean;
   loadPersistedSavedMovies: () => Promise<void>;
   setRemoteSavedMovies: (watchlist: Movie[], favorites: Movie[]) => void;
-  syncRemoteSavedMovies: () => Promise<void>;
+  syncRemoteSavedMovies: (
+    getPending?: () => PendingSavedMovieMutation[],
+  ) => Promise<void>;
 }
+
+const persistSavedMovies = (
+  watchlist: Movie[],
+  favorites: Movie[],
+): Promise<void> => {
+  return asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
+    STORAGE_KEYS.savedMovies,
+    {
+      watchlist,
+      favorites,
+    },
+  );
+};
+
+let isSavedMoviesLoading = false;
 
 export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
   watchlist: [],
@@ -38,26 +106,14 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
     }
     const nextWatchlist = [movie, ...watchlist];
     set({watchlist: nextWatchlist});
-    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-      STORAGE_KEYS.savedMovies,
-      {
-        watchlist: nextWatchlist,
-        favorites,
-      },
-    );
+    persistSavedMovies(nextWatchlist, favorites);
   },
 
   removeFromWatchlist: (movieId: number) => {
     const {watchlist, favorites} = get();
     const nextWatchlist = watchlist.filter(item => item.id !== movieId);
     set({watchlist: nextWatchlist});
-    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-      STORAGE_KEYS.savedMovies,
-      {
-        watchlist: nextWatchlist,
-        favorites,
-      },
-    );
+    persistSavedMovies(nextWatchlist, favorites);
   },
 
   addToFavorites: (movie: Movie) => {
@@ -67,26 +123,14 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
     }
     const nextFavorites = [movie, ...favorites];
     set({favorites: nextFavorites});
-    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-      STORAGE_KEYS.savedMovies,
-      {
-        watchlist,
-        favorites: nextFavorites,
-      },
-    );
+    persistSavedMovies(watchlist, nextFavorites);
   },
 
   removeFromFavorites: (movieId: number) => {
     const {watchlist, favorites} = get();
     const nextFavorites = favorites.filter(item => item.id !== movieId);
     set({favorites: nextFavorites});
-    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-      STORAGE_KEYS.savedMovies,
-      {
-        watchlist,
-        favorites: nextFavorites,
-      },
-    );
+    persistSavedMovies(watchlist, nextFavorites);
   },
 
   isMovieInWatchlist: (movieId: number) => {
@@ -98,64 +142,83 @@ export const useSavedMoviesStore = create<SavedMoviesState>((set, get) => ({
   },
 
   loadPersistedSavedMovies: async () => {
-    const persisted =
-      await asyncStorageAdapter.getItem<PersistedSavedMoviesData>(
-        STORAGE_KEYS.savedMovies,
-      );
-    if (persisted) {
-      set({
-        watchlist: persisted.watchlist || [],
-        favorites: persisted.favorites || [],
-        isInitialized: true,
-      });
+    if (get().isInitialized || isSavedMoviesLoading) {
       return;
     }
-    set({isInitialized: true});
+    isSavedMoviesLoading = true;
+    try {
+      const persisted =
+        await asyncStorageAdapter.getItem<PersistedSavedMoviesData>(
+          STORAGE_KEYS.savedMovies,
+        );
+      if (persisted) {
+        const watchlist = Array.isArray(persisted.watchlist)
+          ? persisted.watchlist
+          : [];
+        const favorites = Array.isArray(persisted.favorites)
+          ? persisted.favorites
+          : [];
+        set({
+          watchlist,
+          favorites,
+          isInitialized: true,
+        });
+        return;
+      }
+      set({isInitialized: true});
+    } catch (error) {
+      console.warn(
+        '[savedMoviesStore] loadPersistedSavedMovies failed:',
+        error,
+      );
+      set({isInitialized: true});
+    } finally {
+      isSavedMoviesLoading = false;
+    }
   },
 
   setRemoteSavedMovies: (watchlist: Movie[], favorites: Movie[]) => {
     set({watchlist, favorites});
-    asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-      STORAGE_KEYS.savedMovies,
-      {
-        watchlist,
-        favorites,
-      },
-    );
+    persistSavedMovies(watchlist, favorites);
   },
 
-  syncRemoteSavedMovies: async () => {
+  syncRemoteSavedMovies: async getPending => {
+    if (get().isSyncingRemote) {
+      return;
+    }
     try {
       set({isSyncingRemote: true});
-      const [watchlistResponse, favoritesResponse] = await Promise.all([
-        movieApi.fetchAccountWatchlist(1),
-        movieApi.fetchAccountFavorites(1),
+      const [remoteWatchlist, remoteFavorites] = await Promise.all([
+        fetchAllPages(page => movieApi.fetchAccountWatchlist(page)),
+        fetchAllPages(page => movieApi.fetchAccountFavorites(page)),
       ]);
 
-      const watchlistMovies = watchlistResponse.results.map(mapMovieDtoToMovie);
-      const favoriteMovies = favoritesResponse.results.map(mapMovieDtoToMovie);
-
-      const deduplicatedWatchlist = Array.from(
-        new Map(watchlistMovies.map(movie => [movie.id, movie])).values(),
+      const pending = getPending ? getPending() : [];
+      const local = get();
+      const nextWatchlist = applyPending(
+        remoteWatchlist,
+        local.watchlist,
+        pending,
+        'ADD_WATCHLIST',
+        'REMOVE_WATCHLIST',
       );
-      const deduplicatedFavorites = Array.from(
-        new Map(favoriteMovies.map(movie => [movie.id, movie])).values(),
+      const nextFavorites = applyPending(
+        remoteFavorites,
+        local.favorites,
+        pending,
+        'ADD_FAVORITE',
+        'REMOVE_FAVORITE',
       );
 
       set({
-        watchlist: deduplicatedWatchlist,
-        favorites: deduplicatedFavorites,
+        watchlist: nextWatchlist,
+        favorites: nextFavorites,
         isSyncingRemote: false,
       });
 
-      await asyncStorageAdapter.setItem<PersistedSavedMoviesData>(
-        STORAGE_KEYS.savedMovies,
-        {
-          watchlist: deduplicatedWatchlist,
-          favorites: deduplicatedFavorites,
-        },
-      );
-    } catch {
+      await persistSavedMovies(nextWatchlist, nextFavorites);
+    } catch (error) {
+      console.warn('[savedMoviesStore] syncRemoteSavedMovies failed:', error);
       set({isSyncingRemote: false});
     }
   },

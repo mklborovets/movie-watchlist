@@ -1,7 +1,8 @@
-import {useEffect, useCallback} from 'react';
-import {useNetworkStatus, tmdbAccountApi} from '@/shared';
+import {useEffect} from 'react';
+import {useNetworkStatus} from '@/shared';
 import {useSavedMoviesStore} from '@/entities/movie';
-import {useSyncQueueStore, SyncQueueItem} from './syncQueueStore';
+import {useSyncQueueStore} from './syncQueueStore';
+import {syncPendingMutations} from './syncQueueRunner';
 
 export interface UseOfflineSyncManagerResult {
   isOnline: boolean;
@@ -10,20 +11,32 @@ export interface UseOfflineSyncManagerResult {
   syncNow: () => Promise<void>;
 }
 
-export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
+let isQueueLoadStarted = false;
+let isSavedMoviesLoadStarted = false;
+
+export const useOfflineSyncStatus = (): UseOfflineSyncManagerResult => {
   const {isOnline} = useNetworkStatus();
+  const pendingCount = useSyncQueueStore(state => state.queue.length);
+  const isSyncing = useSyncQueueStore(state => state.isSyncing);
+
+  return {
+    isOnline,
+    isSyncing,
+    pendingCount,
+    syncNow: syncPendingMutations,
+  };
+};
+
+export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
+  const status = useOfflineSyncStatus();
+  const {isOnline} = status;
   const queue = useSyncQueueStore(state => state.queue);
   const isSyncing = useSyncQueueStore(state => state.isSyncing);
-  const isInitialized = useSyncQueueStore(state => state.isInitialized);
   const loadPersistedQueue = useSyncQueueStore(
     state => state.loadPersistedQueue,
   );
-  const dequeueMutation = useSyncQueueStore(state => state.dequeueMutation);
-  const setIsSyncing = useSyncQueueStore(state => state.setIsSyncing);
+  const isQueueInitialized = useSyncQueueStore(state => state.isInitialized);
 
-  const isSavedMoviesInitialized = useSavedMoviesStore(
-    state => state.isInitialized,
-  );
   const loadPersistedSavedMovies = useSavedMoviesStore(
     state => state.loadPersistedSavedMovies,
   );
@@ -32,89 +45,48 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
   );
 
   useEffect(() => {
-    if (!isInitialized) {
-      loadPersistedQueue();
+    if (isQueueLoadStarted) {
+      return;
     }
-  }, [isInitialized, loadPersistedQueue]);
+    isQueueLoadStarted = true;
+    loadPersistedQueue();
+  }, [loadPersistedQueue]);
 
   useEffect(() => {
-    if (!isSavedMoviesInitialized) {
-      loadPersistedSavedMovies().then(() => {
-        if (isOnline) {
-          syncRemoteSavedMovies();
-        }
-      });
+    if (isSavedMoviesLoadStarted) {
+      return;
     }
-  }, [
-    isSavedMoviesInitialized,
-    loadPersistedSavedMovies,
-    isOnline,
-    syncRemoteSavedMovies,
-  ]);
-
-  const executeItem = async (item: SyncQueueItem): Promise<boolean> => {
-    try {
-      switch (item.action) {
-        case 'ADD_WATCHLIST':
-          await tmdbAccountApi.toggleWatchlist({
-            mediaId: item.movieId,
-            watchlist: true,
-          });
-          return true;
-        case 'REMOVE_WATCHLIST':
-          await tmdbAccountApi.toggleWatchlist({
-            mediaId: item.movieId,
-            watchlist: false,
-          });
-          return true;
-        case 'ADD_FAVORITE':
-          await tmdbAccountApi.toggleFavorite({
-            mediaId: item.movieId,
-            favorite: true,
-          });
-          return true;
-        case 'REMOVE_FAVORITE':
-          await tmdbAccountApi.toggleFavorite({
-            mediaId: item.movieId,
-            favorite: false,
-          });
-          return true;
-        default:
-          return true;
+    isSavedMoviesLoadStarted = true;
+    loadPersistedSavedMovies().then(async () => {
+      if (useSavedMoviesStore.getState().isInitialized) {
+        await syncPendingMutations();
+        await syncRemoteSavedMovies();
       }
-    } catch {
-      return false;
-    }
-  };
+    });
+  }, [loadPersistedSavedMovies, syncRemoteSavedMovies]);
 
-  const syncNow = useCallback(async () => {
-    const currentQueue = useSyncQueueStore.getState().queue;
-    if (!isOnline || currentQueue.length === 0 || isSyncing) {
+  useEffect(() => {
+    if (!isOnline || !isQueueInitialized || isSyncing || queue.length === 0) {
       return;
     }
 
-    setIsSyncing(true);
+    const now = Date.now();
+    const dueItems = queue.filter(
+      item => !item.nextRetryAt || item.nextRetryAt <= now,
+    );
 
-    for (const item of currentQueue) {
-      const success = await executeItem(item);
-      if (success) {
-        dequeueMutation(item.id);
-      }
+    if (dueItems.length > 0) {
+      syncPendingMutations();
+      return;
     }
 
-    setIsSyncing(false);
-  }, [isOnline, isSyncing, setIsSyncing, dequeueMutation]);
+    const earliest = Math.min(...queue.map(item => item.nextRetryAt ?? now));
+    const timer = setTimeout(() => {
+      syncPendingMutations();
+    }, Math.max(earliest - now, 0));
 
-  useEffect(() => {
-    if (isOnline && queue.length > 0 && !isSyncing) {
-      syncNow();
-    }
-  }, [isOnline, queue.length, isSyncing, syncNow]);
+    return () => clearTimeout(timer);
+  }, [isOnline, isQueueInitialized, isSyncing, queue]);
 
-  return {
-    isOnline,
-    isSyncing,
-    pendingCount: queue.length,
-    syncNow,
-  };
+  return status;
 };

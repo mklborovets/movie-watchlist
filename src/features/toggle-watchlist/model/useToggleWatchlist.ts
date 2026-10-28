@@ -1,12 +1,6 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSequence,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated';
 import {Movie, useSavedMoviesStore} from '@/entities/movie';
 import {useSyncQueueStore} from '@/features/offline-sync';
+import {useBounceAnimation} from '@/shared';
 
 export interface UseToggleWatchlistProps {
   movie: Movie;
@@ -32,13 +26,10 @@ export const useToggleWatchlist = ({
   );
   const enqueueMutation = useSyncQueueStore(state => state.enqueueMutation);
 
-  const scale = useSharedValue(1);
+  const {triggerBounce, animatedStyle} = useBounceAnimation({peakScale: 1.25});
 
   const handleToggle = () => {
-    scale.value = withSequence(
-      withTiming(1.25, {duration: 120}),
-      withSpring(1, {damping: 12, stiffness: 220}),
-    );
+    triggerBounce();
 
     if (isInWatchlist) {
       removeFromWatchlist(movie.id);
@@ -54,10 +45,6 @@ export const useToggleWatchlist = ({
       }
     }
   };
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{scale: scale.value}],
-  }));
 
   const isExtended = variant === 'extended';
   const iconSize = size === 'sm' ? 16 : size === 'lg' ? 22 : 18;

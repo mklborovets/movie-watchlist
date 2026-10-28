@@ -1,4 +1,4 @@
-import {useOfflineSyncManager} from '@/features/offline-sync';
+import {useOfflineSyncStatus} from '@/features/offline-sync';
 
 export type OfflineStatusType = 'offline' | 'syncing' | 'pending';
 
@@ -13,7 +13,7 @@ export interface UseOfflineStatusBarResult {
 }
 
 export const useOfflineStatusBar = (): UseOfflineStatusBarResult => {
-  const {isOnline, isSyncing, pendingCount, syncNow} = useOfflineSyncManager();
+  const {isOnline, isSyncing, pendingCount, syncNow} = useOfflineSyncStatus();
 
   const isOffline = !isOnline;
   const isVisible = isOffline || isSyncing || pendingCount > 0;

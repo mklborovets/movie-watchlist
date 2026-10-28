@@ -24,7 +24,7 @@ export const useNetworkStatus = (): NetworkStatus => {
       setNetworkStatus({
         isConnected: connected,
         isInternetReachable: reachable,
-        isOnline: connected && reachable,
+        isOnline: connected,
       });
     });
 

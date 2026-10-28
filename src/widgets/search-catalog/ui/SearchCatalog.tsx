@@ -31,10 +31,11 @@ export const SearchCatalog: React.FC<SearchCatalogProps> = ({
 }) => {
   const {
     movies,
-    isSearching,
     isLoading,
     isError,
     isEmpty,
+    emptyTitle,
+    emptyDescription,
     isFetchingNextPage,
     handleEndReached,
     handleMoviePress,
@@ -83,12 +84,8 @@ export const SearchCatalog: React.FC<SearchCatalogProps> = ({
       return (
         <EmptyStateView
           iconName="search"
-          title={isSearching ? 'No movies found' : 'No movies in this category'}
-          description={
-            isSearching
-              ? 'Try searching with different keywords or check spelling.'
-              : 'Try selecting different filters or another genre.'
-          }
+          title={emptyTitle}
+          description={emptyDescription}
         />
       );
     }

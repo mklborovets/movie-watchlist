@@ -12,6 +12,8 @@ export interface SyncQueueItem {
   action: SyncActionType;
   movieId: number;
   timestamp: number;
+  retryCount?: number;
+  nextRetryAt?: number;
 }
 
 export interface SyncQueueState {
@@ -20,6 +22,7 @@ export interface SyncQueueState {
   isInitialized: boolean;
   enqueueMutation: (action: SyncActionType, movieId: number) => void;
   dequeueMutation: (id: string) => void;
+  updateMutation: (id: string, patch: Partial<SyncQueueItem>) => void;
   clearQueue: () => void;
   setIsSyncing: (isSyncing: boolean) => void;
   loadPersistedQueue: () => Promise<void>;
@@ -44,6 +47,15 @@ const isOppositeAction = (
   return false;
 };
 
+const persistQueue = (queue: SyncQueueItem[]): Promise<void> => {
+  return asyncStorageAdapter.setItem<SyncQueueItem[]>(
+    STORAGE_KEYS.syncQueue,
+    queue,
+  );
+};
+
+let isQueueLoading = false;
+
 export const useSyncQueueStore = create<SyncQueueState>((set, get) => ({
   queue: [],
   isSyncing: false,
@@ -60,10 +72,7 @@ export const useSyncQueueStore = create<SyncQueueState>((set, get) => ({
         (_, index) => index !== existingOppositeIndex,
       );
       set({queue: nextQueue});
-      asyncStorageAdapter.setItem<SyncQueueItem[]>(
-        STORAGE_KEYS.syncQueue,
-        nextQueue,
-      );
+      persistQueue(nextQueue);
       return;
     }
 
@@ -75,28 +84,32 @@ export const useSyncQueueStore = create<SyncQueueState>((set, get) => ({
       return;
     }
 
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 7);
     const newItem: SyncQueueItem = {
-      id: `${action}_${movieId}_${Date.now()}`,
+      id: `${action}_${movieId}_${timestamp}_${randomSuffix}`,
       action,
       movieId,
-      timestamp: Date.now(),
+      timestamp,
     };
 
     const nextQueue = [...currentQueue, newItem];
     set({queue: nextQueue});
-    asyncStorageAdapter.setItem<SyncQueueItem[]>(
-      STORAGE_KEYS.syncQueue,
-      nextQueue,
-    );
+    persistQueue(nextQueue);
   },
 
   dequeueMutation: (id: string) => {
     const nextQueue = get().queue.filter(item => item.id !== id);
     set({queue: nextQueue});
-    asyncStorageAdapter.setItem<SyncQueueItem[]>(
-      STORAGE_KEYS.syncQueue,
-      nextQueue,
+    persistQueue(nextQueue);
+  },
+
+  updateMutation: (id: string, patch: Partial<SyncQueueItem>) => {
+    const nextQueue = get().queue.map(item =>
+      item.id === id ? {...item, ...patch} : item,
     );
+    set({queue: nextQueue});
+    persistQueue(nextQueue);
   },
 
   clearQueue: () => {
@@ -109,13 +122,23 @@ export const useSyncQueueStore = create<SyncQueueState>((set, get) => ({
   },
 
   loadPersistedQueue: async () => {
-    const persisted = await asyncStorageAdapter.getItem<SyncQueueItem[]>(
-      STORAGE_KEYS.syncQueue,
-    );
-    if (persisted) {
-      set({queue: persisted, isInitialized: true});
+    if (get().isInitialized || isQueueLoading) {
       return;
     }
-    set({isInitialized: true});
+    isQueueLoading = true;
+    try {
+      const persisted = await asyncStorageAdapter.getItem<SyncQueueItem[]>(
+        STORAGE_KEYS.syncQueue,
+      );
+      set({
+        queue: Array.isArray(persisted) ? persisted : [],
+        isInitialized: true,
+      });
+    } catch (error) {
+      console.warn('[syncQueueStore] loadPersistedQueue failed:', error);
+      set({isInitialized: true});
+    } finally {
+      isQueueLoading = false;
+    }
   },
 }));

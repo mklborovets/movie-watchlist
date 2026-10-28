@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react';
 import {Movie, useSavedMoviesStore} from '@/entities/movie';
-import {useSyncQueueStore} from '@/features/offline-sync';
+import {useSyncQueueStore, refreshSavedMovies} from '@/features/offline-sync';
 import {SegmentedControlOption, EmptyStateIconName} from '@/shared';
 
 export type SavedTab = 'watchlist' | 'favorites';
@@ -20,9 +20,6 @@ export const useSavedMoviesBoard = ({
   const watchlist = useSavedMoviesStore(state => state.watchlist);
   const favorites = useSavedMoviesStore(state => state.favorites);
   const isSyncingRemote = useSavedMoviesStore(state => state.isSyncingRemote);
-  const syncRemoteSavedMovies = useSavedMoviesStore(
-    state => state.syncRemoteSavedMovies,
-  );
   const removeFromWatchlist = useSavedMoviesStore(
     state => state.removeFromWatchlist,
   );
@@ -86,9 +83,12 @@ export const useSavedMoviesBoard = ({
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await syncRemoteSavedMovies();
-    setIsRefreshing(false);
-  }, [syncRemoteSavedMovies]);
+    try {
+      await refreshSavedMovies();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
 
   return {
     activeTab,

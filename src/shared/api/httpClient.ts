@@ -6,7 +6,7 @@ import axios, {
 import {ENV, API_TIMEOUT_MS} from '@/shared/config';
 
 export const httpClient: AxiosInstance = axios.create({
-  baseURL: ENV.tmdbApiBaseUrl.replace('https://', 'http://'),
+  baseURL: ENV.tmdbApiBaseUrl,
   timeout: API_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
@@ -16,12 +16,6 @@ export const httpClient: AxiosInstance = axios.create({
 
 httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (
-      config.baseURL &&
-      config.baseURL.startsWith('https://api.themoviedb.org')
-    ) {
-      config.baseURL = config.baseURL.replace('https://', 'http://');
-    }
     if (ENV.tmdbBearerToken) {
       config.headers.Authorization = `Bearer ${ENV.tmdbBearerToken}`;
     }

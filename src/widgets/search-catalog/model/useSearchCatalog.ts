@@ -60,6 +60,13 @@ export const useSearchCatalog = ({
     }
   };
 
+  const emptyTitle = isSearching
+    ? 'No movies found'
+    : 'No movies in this category';
+  const emptyDescription = isSearching
+    ? 'Try searching with different keywords or check spelling.'
+    : 'Try selecting different filters or another genre.';
+
   const handleRetry = () => {
     activeQuery.refetch();
   };
@@ -70,6 +77,8 @@ export const useSearchCatalog = ({
     isLoading,
     isError,
     isEmpty,
+    emptyTitle,
+    emptyDescription,
     isFetchingNextPage,
     handleEndReached,
     handleMoviePress,

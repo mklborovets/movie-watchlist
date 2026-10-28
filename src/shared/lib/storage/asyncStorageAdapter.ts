@@ -8,7 +8,11 @@ export const asyncStorageAdapter = {
         return null;
       }
       return JSON.parse(rawValue) as T;
-    } catch {
+    } catch (error) {
+      console.warn(
+        `[asyncStorageAdapter] getItem failed for key "${key}":`,
+        error,
+      );
       return null;
     }
   },
@@ -17,24 +21,30 @@ export const asyncStorageAdapter = {
     try {
       const serializedValue = JSON.stringify(value);
       await AsyncStorage.setItem(key, serializedValue);
-    } catch {
-      return;
+    } catch (error) {
+      console.warn(
+        `[asyncStorageAdapter] setItem failed for key "${key}":`,
+        error,
+      );
     }
   },
 
   async removeItem(key: string): Promise<void> {
     try {
       await AsyncStorage.removeItem(key);
-    } catch {
-      return;
+    } catch (error) {
+      console.warn(
+        `[asyncStorageAdapter] removeItem failed for key "${key}":`,
+        error,
+      );
     }
   },
 
   async clear(): Promise<void> {
     try {
       await AsyncStorage.clear();
-    } catch {
-      return;
+    } catch (error) {
+      console.warn('[asyncStorageAdapter] clear failed:', error);
     }
   },
 };
