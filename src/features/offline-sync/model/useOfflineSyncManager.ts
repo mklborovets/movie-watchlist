@@ -102,15 +102,8 @@ export const useOfflineSyncManager = (): UseOfflineSyncManagerResult => {
       }
     }
 
-    await syncRemoteSavedMovies();
     setIsSyncing(false);
-  }, [
-    isOnline,
-    isSyncing,
-    setIsSyncing,
-    dequeueMutation,
-    syncRemoteSavedMovies,
-  ]);
+  }, [isOnline, isSyncing, setIsSyncing, dequeueMutation]);
 
   useEffect(() => {
     if (isOnline && queue.length > 0 && !isSyncing) {
